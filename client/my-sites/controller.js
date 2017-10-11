@@ -296,7 +296,7 @@ function showMissingPrimaryError( currentUser, dispatch ) {
 	}
 }
 
-export default {
+const controller = {
 	// Clears selected site from global redux state
 	noSite( context, next ) {
 		context.store.dispatch( setSelectedSiteId( null ) );
@@ -528,3 +528,14 @@ export default {
 		next();
 	},
 };
+
+export default controller;
+
+export const noSite = controller.noSite;
+export const sitesSelection = controller.sitesSelection;
+export const jetpackModuleActive = controller.jetpackModuleActive;
+export const makeNavigation = controller.makeNavigation;
+export const navigation = controller.navigation;
+export const jetPackWarning = controller.jetPackWarning;
+export const sites = controller.sites;
+export const makeSites = controller.makeSites;

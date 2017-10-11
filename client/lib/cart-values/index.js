@@ -186,3 +186,19 @@ export default {
 	isNetherlandsIdealEnabled,
 	isCreditCardPaymentsEnabled,
 };
+
+export {
+	applyCoupon,
+	canRemoveFromCart,
+	cartItems,
+	emptyCart,
+	fillInAllCartItemAttributes,
+	fillInSingleCartItemAttributes,
+	getNewMessages,
+	getRefundPolicy,
+	isFree,
+	isPaidForFullyInCredits,
+	isPaymentMethodEnabled,
+	isPayPalExpressEnabled,
+	isCreditCardPaymentsEnabled,
+};
