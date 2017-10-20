@@ -1254,7 +1254,6 @@ const exported = {
 };
 
 export default exported;
-export const {} = exported;
 export {
 	retarget,
 	retargetViewPlans,
