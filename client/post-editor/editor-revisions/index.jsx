@@ -77,7 +77,7 @@ class EditorRevisions extends Component {
 		}
 
 		return (
-			<div>
+			<div className="editor-revisions__wrapper">
 				<QueryPostRevisions postId={ postId } siteId={ siteId } />
 				<QueryUsers siteId={ siteId } userIds={ authorsIds } />
 				<EditorRevisionsList postId={ postId } revisions={ revisions } siteId={ siteId } />
@@ -86,7 +86,6 @@ class EditorRevisions extends Component {
 					selectedRevisionId={ selectedRevisionId }
 					siteId={ siteId }
 				/>
-				<button>LOAD</button>
 			</div>
 		);
 	}
