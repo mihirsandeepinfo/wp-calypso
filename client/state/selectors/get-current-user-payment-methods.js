@@ -11,6 +11,7 @@ import { lowerCase, upperCase } from 'lodash';
  */
 import { getCurrentUserLocale } from 'state/current-user/selectors';
 import { getGeoCountryShort } from 'state/geo/selectors';
+import { abtest } from 'lib/abtest';
 
 /**
  * Constants
@@ -27,7 +28,7 @@ const paymentMethods = {
 	byCountry: {
 		US: DEFAULT_PAYMENT_METHODS,
 		NL: [ 'credit-card', 'ideal', 'paypal' ],
-		DE: [ 'credit-card', 'giropay', 'paypal' ],
+		DE: [ 'credit-card', 'paypal' ],
 	},
 
 	byWpcomLang: {},
@@ -43,6 +44,11 @@ export default function getCurrentUserPaymentMethods( state ) {
 	const countryCode = getGeoCountryShort( state );
 	const wpcomLang = getCurrentUserLocale( state );
 	const generatedLocale = lowerCase( wpcomLang ) + '-' + upperCase( countryCode );
+
+	// Giropay AB test in Germany. Tests is only enabled in Germany, so won't return 'show' in any other country
+	if ( abtest( 'showGiropayPaymentMethod', countryCode ) === 'show' ) {
+		return [ 'credit-card', 'giropay', 'paypal' ];
+	}
 
 	return (
 		paymentMethods.byLocale[ generatedLocale ] ||

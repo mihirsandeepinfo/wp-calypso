@@ -1,5 +1,7 @@
 /** @format */
 
+jest.mock( 'lib/abtest', () => ( { abtest: require( 'sinon' ).stub() } ) );
+
 /**
  * External dependencies
  */
@@ -9,6 +11,7 @@ import { expect } from 'chai';
  * Internal dependencies
  */
 import { getCurrentUserPaymentMethods } from '../';
+import { abtest } from 'lib/abtest';
 
 describe( 'getCurrentUserPaymentMethods()', () => {
 	const enLangUsCountryState = {
@@ -102,6 +105,7 @@ describe( 'getCurrentUserPaymentMethods()', () => {
 	};
 
 	test( 'en-US should return credit card primary, PayPal secondary', () => {
+		abtest.withArgs( 'showGiropayPaymentMethod' ).returns( 'hide' );
 		expect( getCurrentUserPaymentMethods( enLangUsCountryState ) ).to.eql( [
 			'credit-card',
 			'paypal',
@@ -109,6 +113,7 @@ describe( 'getCurrentUserPaymentMethods()', () => {
 	} );
 
 	test( 'en-DE should return CC, GiroPay, Paypal', () => {
+		abtest.withArgs( 'showGiropayPaymentMethod' ).returns( 'show' );
 		expect( getCurrentUserPaymentMethods( enLangDeCountryState ) ).to.eql( [
 			'credit-card',
 			'giropay',
@@ -116,7 +121,8 @@ describe( 'getCurrentUserPaymentMethods()', () => {
 		] );
 	} );
 
-	test( 'de-DE should return PayPal primary, credit card secondary', () => {
+	test( 'de-DE should return CC, Giropay, Paypal', () => {
+		abtest.withArgs( 'showGiropayPaymentMethod' ).returns( 'show' );
 		expect( getCurrentUserPaymentMethods( deLangDeCountryState ) ).to.eql( [
 			'credit-card',
 			'giropay',
@@ -124,7 +130,16 @@ describe( 'getCurrentUserPaymentMethods()', () => {
 		] );
 	} );
 
+	test( 'de-DE with test as hide should return return CC, Paypal', () => {
+		abtest.withArgs( 'showGiropayPaymentMethod' ).returns( 'hide' );
+		expect( getCurrentUserPaymentMethods( deLangDeCountryState ) ).to.eql( [
+			'credit-card',
+			'paypal',
+		] );
+	} );
+
 	test( 'nl-NL should return credit card, iDEAL, PayPal ', () => {
+		abtest.withArgs( 'showGiropayPaymentMethod' ).returns( 'hide' );
 		expect( getCurrentUserPaymentMethods( nlCountryState ) ).to.eql( [
 			'credit-card',
 			'ideal',
@@ -133,6 +148,7 @@ describe( 'getCurrentUserPaymentMethods()', () => {
 	} );
 
 	test( 'fr-FR should return credit card primary, PayPal secondary', () => {
+		abtest.withArgs( 'showGiropayPaymentMethod' ).returns( 'hide' );
 		expect( getCurrentUserPaymentMethods( frLangFRCountryState ) ).to.eql( [
 			'credit-card',
 			'paypal',

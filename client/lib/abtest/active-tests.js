@@ -108,4 +108,14 @@ export default {
 		defaultVariation: 'hide',
 		allowExistingUsers: true,
 	},
+	showGiropayPaymentMethod: {
+		datestamp: '20171101',
+		variations: {
+			hide: 50,
+			show: 50,
+		},
+		defaultVariation: 'hide',
+		allowExistingUsers: true,
+		countryCodeTarget: 'DE',
+	},
 };
