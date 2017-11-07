@@ -108,7 +108,7 @@ export default {
 		defaultVariation: 'hide',
 		allowExistingUsers: true,
 	},
-	showGiropayPaymentMethod: {
+	showNewPaymentMethods: {
 		datestamp: '20171101',
 		variations: {
 			hide: 50,
@@ -116,6 +116,5 @@ export default {
 		},
 		defaultVariation: 'hide',
 		allowExistingUsers: true,
-		countryCodeTarget: 'DE',
 	},
 };

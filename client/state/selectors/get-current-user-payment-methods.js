@@ -45,9 +45,14 @@ export default function getCurrentUserPaymentMethods( state ) {
 	const wpcomLang = getCurrentUserLocale( state );
 	const generatedLocale = lowerCase( wpcomLang ) + '-' + upperCase( countryCode );
 
-	// Giropay AB test in Germany. Tests is only enabled in Germany, so won't return 'show' in any other country
-	if ( abtest( 'showGiropayPaymentMethod', countryCode ) === 'show' ) {
-		return [ 'credit-card', 'giropay', 'paypal' ];
+	// Giropay/Bancontact AB test in Germany and Belgium:
+
+	if ( abtest( 'showNewPaymentMethods' ) === 'show' ) {
+		if ( 'DE' === countryCode ) {
+			return [ 'credit-card', 'giropay', 'paypal' ];
+		} else if ( 'BE' === countryCode ) {
+			return [ 'credit-card', 'bancontact', 'paypal' ];
+		}
 	}
 
 	return (
