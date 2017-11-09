@@ -19,7 +19,6 @@ import SidebarFooter from 'layout/sidebar/footer';
 import SidebarRegion from 'layout/sidebar/region';
 import EditorActionBar from 'post-editor/editor-action-bar';
 import EditorDeletePost from 'post-editor/editor-delete-post';
-import EditorRevisionsList from 'post-editor/editor-revisions-list';
 
 export class EditorSidebar extends Component {
 	static propTypes = {
@@ -36,9 +35,6 @@ export class EditorSidebar extends Component {
 		setPostDate: PropTypes.func,
 		isPostPrivate: PropTypes.bool,
 		confirmationSidebarStatus: PropTypes.string,
-		loadRevision: PropTypes.func,
-		selectedRevisionId: PropTypes.number,
-		selectRevision: PropTypes.func,
 
 		// connected props
 		nestedSidebarTarget: PropTypes.oneOf( [ NESTED_SIDEBAR_NONE, NESTED_SIDEBAR_REVISIONS ] ),
@@ -69,10 +65,6 @@ export class EditorSidebar extends Component {
 			isPostPrivate,
 			confirmationSidebarStatus,
 			nestedSidebarTarget,
-			setNestedSidebar,
-			loadRevision,
-			selectedRevisionId,
-			selectRevision,
 		} = this.props;
 
 		const sidebarClassNames = classNames( 'editor-sidebar', {
@@ -97,18 +89,9 @@ export class EditorSidebar extends Component {
 						onSave={ onSave }
 						isPostPrivate={ isPostPrivate }
 						confirmationSidebarStatus={ confirmationSidebarStatus }
+						// @TODO stop passing this
 						setNestedSidebar={ setNestedSidebar }
-						selectRevision={ selectRevision }
 					/>
-				</SidebarRegion>
-				<SidebarRegion className="editor-sidebar__nested-region editor-sidebar__nonscrolling-region">
-					{ nestedSidebarTarget === NESTED_SIDEBAR_REVISIONS && (
-						<EditorRevisionsList
-							loadRevision={ loadRevision }
-							selectedRevisionId={ selectedRevisionId }
-							selectRevision={ selectRevision }
-						/>
-					) }
 				</SidebarRegion>
 				<SidebarFooter>
 					{ nestedSidebarTarget === NESTED_SIDEBAR_NONE && (

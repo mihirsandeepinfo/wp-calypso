@@ -200,7 +200,7 @@ export class EditorGroundControl extends PureComponent {
 	};
 
 	renderGroundControlQuickSaveButtons() {
-		const { isSaving, isSidebarOpened, post, selectRevision, translate } = this.props;
+		const { isSaving, post, selectRevision, translate } = this.props;
 
 		const isSaveAvailable = this.isSaveAvailable();
 		const showingStatusLabel = this.shouldShowStatusLabel();
@@ -235,9 +235,7 @@ export class EditorGroundControl extends PureComponent {
 							) }
 					</div>
 				) }
-				{ hasRevisions && (
-					<HistoryButton selectRevision={ selectRevision } isSidebarOpened={ isSidebarOpened } />
-				) }
+				{ hasRevisions && <HistoryButton selectRevision={ selectRevision } /> }
 			</div>
 		);
 	}

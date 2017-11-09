@@ -49,8 +49,8 @@ import { recordTracksEvent } from 'state/analytics/actions';
 import { editPost, receivePost, savePostSuccess } from 'state/posts/actions';
 import { getEditedPostValue, getPostEdits, isEditedPostDirty } from 'state/posts/selectors';
 import { getCurrentUserId } from 'state/current-user/selectors';
-import { hasBrokenSiteUserConnection } from 'state/selectors';
-import { NESTED_SIDEBAR_NONE, NESTED_SIDEBAR_REVISIONS } from 'state/ui/editor/sidebar/constants';
+import { hasBrokenSiteUserConnection, editedPostHasContent } from 'state/selectors';
+import { NESTED_SIDEBAR_NONE } from 'state/ui/editor/sidebar/constants';
 import { getNestedSidebarTarget } from 'state/ui/editor/sidebar/selectors';
 import {
 	setNestedSidebar,
@@ -72,11 +72,9 @@ import { protectForm } from 'lib/protect-form';
 import EditorSidebar from 'post-editor/editor-sidebar';
 import Site from 'blocks/site';
 import StatusLabel from 'post-editor/editor-status-label';
-import { editedPostHasContent } from 'state/selectors';
 import EditorGroundControl from 'post-editor/editor-ground-control';
 import { isWithinBreakpoint } from 'lib/viewport';
 import { isSitePreviewable, getSiteDomain } from 'state/sites/selectors';
-import EditorDiffViewer from 'post-editor/editor-diff-viewer';
 import { removep } from 'lib/formatting';
 
 export const PostEditor = createReactClass( {
@@ -278,13 +276,6 @@ export const PostEditor = createReactClass( {
 			: this.props.openEditorSidebar();
 	},
 
-	selectRevision: function( selectedRevisionId ) {
-		this.setState( { selectedRevisionId } );
-		if ( selectedRevisionId !== null && isWithinBreakpoint( '<660px' ) ) {
-			this.props.setLayoutFocus( 'content' );
-		}
-	},
-
 	loadRevision: function( revision ) {
 		this.props.setNestedSidebar( NESTED_SIDEBAR_NONE );
 		this.setState( { selectedRevisionId: null } );
@@ -441,19 +432,13 @@ export const PostEditor = createReactClass( {
 								/>
 								<EditorWordCount selectedText={ this.state.selectedText } />
 							</div>
-							{ this.props.nestedSidebarTarget === NESTED_SIDEBAR_REVISIONS && (
-								<EditorDiffViewer
-									siteId={ site.ID }
-									postId={ this.state.post.ID }
-									selectedRevisionId={ this.state.selectedRevisionId }
-								/>
-							) }
 						</div>
 					</div>
 					<EditorSidebar
 						savedPost={ this.state.savedPost }
 						post={ this.state.post }
 						isNew={ this.state.isNew }
+						loadRevision={ this.loadRevision }
 						onPublish={ this.onPublish }
 						onTrashingPost={ this.onTrashingPost }
 						site={ site }
@@ -461,9 +446,9 @@ export const PostEditor = createReactClass( {
 						onSave={ this.onSave }
 						isPostPrivate={ utils.isPrivate( this.state.post ) }
 						confirmationSidebarStatus={ this.state.confirmationSidebar }
-						loadRevision={ this.loadRevision }
-						selectedRevisionId={ this.state.selectedRevisionId }
-						selectRevision={ this.selectRevision }
+						// @TODO this doesn't seem right
+						setNestedSidebar={ this.setNestedSidebar }
+						nestedSidebar={ this.state.nestedSidebar }
 					/>
 					{ this.props.isSitePreviewable ? (
 						<EditorPreview
