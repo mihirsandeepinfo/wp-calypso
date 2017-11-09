@@ -3110,9 +3110,7 @@
       }
     },
     "i18n-calypso": {
-      "version": "1.8.4",
-      "from": "git://github.com/automattic/i18n-calypso.git#f9a47bc808778a9335531115e8d022d40235cf27",
-      "resolved": "git://github.com/automattic/i18n-calypso.git#f9a47bc808778a9335531115e8d022d40235cf27",
+      "version": "1.8.4-alpha.1",
       "dependencies": {
         "async": {
           "version": "1.5.2"
@@ -3196,9 +3194,7 @@
       }
     },
     "interpolate-components": {
-      "version": "1.1.1",
-      "from": "git://github.com/automattic/interpolate-components.git#d6dfdfc1d72f9bc95f99a4febfbde14b24d6e9b8",
-      "resolved": "git://github.com/automattic/interpolate-components.git#d6dfdfc1d72f9bc95f99a4febfbde14b24d6e9b8"
+      "version": "1.1.1-alpha.1"
     },
     "interpret": {
       "version": "1.0.4"
