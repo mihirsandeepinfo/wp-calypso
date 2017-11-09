@@ -77,7 +77,7 @@ class EditorRevisions extends Component {
 		}
 
 		return (
-			<div className="editor-revisions__wrapper">
+			<div className="editor-revisions">
 				<QueryPostRevisions
 					postId={ postId }
 					siteId={ siteId }
