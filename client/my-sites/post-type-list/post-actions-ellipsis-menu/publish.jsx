@@ -1,14 +1,13 @@
+/** @format */
+
 /**
  * External dependencies
- *
- * @format
  */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
-import { get, includes } from 'lodash';
+import { includes } from 'lodash';
 
 /**
  * Internal dependencies
@@ -19,7 +18,6 @@ import { bumpStatGenerator } from './utils';
 import { getPost } from 'state/posts/selectors';
 import { savePost } from 'state/posts/actions';
 import { canCurrentUser } from 'state/selectors';
-import { getPostType } from 'state/post-types/selectors';
 
 class PostActionsEllipsisMenuPublish extends Component {
 	static propTypes = {
@@ -73,19 +71,15 @@ const mapStateToProps = ( state, { globalId } ) => {
 		status: post.status,
 		siteId: post.site_ID,
 		postId: post.ID,
+		type: post.type,
 		canPublish: canCurrentUser( state, post.site_ID, 'publish_posts' ),
-		type: getPostType( state, post.site_ID, post.type ),
 	};
 };
 
 const mapDispatchToProps = { savePost, bumpAnalyticsStat };
 
 const mergeProps = ( stateProps, dispatchProps, ownProps ) => {
-	const bumpStat = bumpStatGenerator(
-		get( stateProps, 'type.name' ),
-		'publish',
-		dispatchProps.bumpAnalyticsStat
-	);
+	const bumpStat = bumpStatGenerator( stateProps.type, 'publish', dispatchProps.bumpAnalyticsStat );
 	return Object.assign( {}, ownProps, stateProps, dispatchProps, { bumpStat } );
 };
 

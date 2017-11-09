@@ -1,14 +1,12 @@
+/** @format */
+
 /**
  * External dependencies
- *
- * @format
  */
-
 import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
-import { get } from 'lodash';
 
 /**
  * Internal dependencies
@@ -20,7 +18,6 @@ import { trashPost, deletePost } from 'state/posts/actions';
 import { canCurrentUser } from 'state/selectors';
 import { getPost } from 'state/posts/selectors';
 import { getCurrentUserId } from 'state/current-user/selectors';
-import { getPostType } from 'state/post-types/selectors';
 
 class PostActionsEllipsisMenuTrash extends Component {
 	static propTypes = {
@@ -65,9 +62,11 @@ class PostActionsEllipsisMenuTrash extends Component {
 
 		return (
 			<PopoverMenuItem onClick={ this.trashPost } icon="trash">
-				{ 'trash' === status
-					? translate( 'Delete Permanently' )
-					: translate( 'Trash', { context: 'verb' } ) }
+				{ 'trash' === status ? (
+					translate( 'Delete Permanently' )
+				) : (
+					translate( 'Trash', { context: 'verb' } )
+				) }
 			</PopoverMenuItem>
 		);
 	}
@@ -86,12 +85,12 @@ const mapStateToProps = ( state, { globalId } ) => {
 		postId: post.ID,
 		siteId: post.site_ID,
 		status: post.status,
+		type: post.type,
 		canDelete: canCurrentUser(
 			state,
 			post.site_ID,
 			isAuthor ? 'delete_posts' : 'delete_others_posts'
 		),
-		type: getPostType( state, post.site_ID, post.type ),
 	};
 };
 
@@ -99,12 +98,12 @@ const mapDispatchToProps = { trashPost, deletePost, bumpAnalyticsStat };
 
 const mergeProps = ( stateProps, dispatchProps, ownProps ) => {
 	const bumpTrashStat = bumpStatGenerator(
-		get( stateProps, 'type.name' ),
+		stateProps.type,
 		'trash',
 		dispatchProps.bumpAnalyticsStat
 	);
 	const bumpDeleteStat = bumpStatGenerator(
-		get( stateProps, 'type.name' ),
+		stateProps.type,
 		'delete',
 		dispatchProps.bumpAnalyticsStat
 	);

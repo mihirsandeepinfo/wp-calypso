@@ -1,14 +1,13 @@
+/** @format */
+
 /**
  * External dependencies
- *
- * @format
  */
-
 import React from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
-import { get, includes } from 'lodash';
+import { includes } from 'lodash';
 
 /**
  * Internal dependencies
@@ -59,6 +58,7 @@ const mapStateToProps = ( state, { globalId } ) => {
 	return {
 		canEdit: canCurrentUserEditPost( state, globalId ),
 		status: post.status,
+		type: post.type,
 		duplicateUrl: getEditorDuplicatePostPath( state, post.site_ID, post.ID ),
 	};
 };
@@ -67,7 +67,7 @@ const mapDispatchToProps = { bumpAnalyticsStat };
 
 const mergeProps = ( stateProps, dispatchProps, ownProps ) => {
 	const bumpStat = bumpStatGenerator(
-		get( stateProps, 'type.name' ),
+		stateProps.type,
 		'duplicate',
 		dispatchProps.bumpAnalyticsStat
 	);
