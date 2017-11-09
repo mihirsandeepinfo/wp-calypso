@@ -1025,7 +1025,7 @@
       "version": "2.1.0"
     },
     "clone": {
-      "version": "1.0.2",
+      "version": "1.0.3",
       "dev": true
     },
     "clone-regexp": {
@@ -1043,7 +1043,7 @@
       "version": "1.1.0"
     },
     "color-convert": {
-      "version": "1.9.0"
+      "version": "1.9.1"
     },
     "color-diff": {
       "version": "0.1.7",
@@ -2211,7 +2211,7 @@
       "dev": true
     },
     "flow-parser": {
-      "version": "0.58.0",
+      "version": "0.59.0",
       "dev": true
     },
     "flux": {
@@ -3110,7 +3110,9 @@
       }
     },
     "i18n-calypso": {
-      "version": "1.8.1",
+      "version": "1.8.4",
+      "from": "git://github.com/automattic/i18n-calypso.git#f9a47bc808778a9335531115e8d022d40235cf27",
+      "resolved": "git://github.com/automattic/i18n-calypso.git#f9a47bc808778a9335531115e8d022d40235cf27",
       "dependencies": {
         "async": {
           "version": "1.5.2"
@@ -3194,7 +3196,9 @@
       }
     },
     "interpolate-components": {
-      "version": "1.1.0"
+      "version": "1.1.1",
+      "from": "git://github.com/automattic/interpolate-components.git#d6dfdfc1d72f9bc95f99a4febfbde14b24d6e9b8",
+      "resolved": "git://github.com/automattic/interpolate-components.git#d6dfdfc1d72f9bc95f99a4febfbde14b24d6e9b8"
     },
     "interpret": {
       "version": "1.0.4"
@@ -5681,9 +5685,6 @@
       }
     },
     "react": {
-      "version": "15.6.2"
-    },
-    "react-addons-create-fragment": {
       "version": "15.6.2"
     },
     "react-click-outside": {
