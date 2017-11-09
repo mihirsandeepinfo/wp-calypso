@@ -8,13 +8,14 @@ import React, { Component } from 'react';
 import PropTypes from 'prop-types';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
-import { includes } from 'lodash';
+import { get, includes } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import PopoverMenuItem from 'components/popover/menu-item';
-import { mc } from 'lib/analytics';
+import { bumpStat as bumpAnalyticsStat } from 'state/analytics/actions';
+import { bumpStatGenerator } from './utils';
 import { getPost } from 'state/posts/selectors';
 import { toggleSharePanel } from 'state/ui/post-type-list/actions';
 import { isPublicizeEnabled } from 'state/selectors';
@@ -26,6 +27,7 @@ class PostActionsEllipsisMenuShare extends Component {
 		translate: PropTypes.func.isRequired,
 		status: PropTypes.string,
 		onClick: PropTypes.func,
+		bumpStat: PropTypes.func,
 	};
 
 	constructor() {
@@ -35,17 +37,18 @@ class PostActionsEllipsisMenuShare extends Component {
 	}
 
 	sharePost() {
-		mc.bumpStat( 'calypso_cpt_actions', 'share' );
+		this.props.bumpStat();
 		this.props.toggleSharePanel( this.props.globalId );
 		this.props.onClick(); // hide ellipsis menu
 	}
 
 	render() {
-		const { translate, status, isPublicizeEnabled: isPublicizeEnabledForSite } = this.props;
+		const { translate, status, type, isPublicizeEnabled: isPublicizeEnabledForSite } = this.props;
 		if (
 			! config.isEnabled( 'posts/post-type-list' ) ||
 			! includes( [ 'publish' ], status ) ||
-			! isPublicizeEnabledForSite
+			! isPublicizeEnabledForSite ||
+			'post' !== type
 		) {
 			return null;
 		}
@@ -58,19 +61,30 @@ class PostActionsEllipsisMenuShare extends Component {
 	}
 }
 
-export default connect(
-	( state, { globalId } ) => {
-		const post = getPost( state, globalId );
-		if ( ! post ) {
-			return {};
-		}
-
-		return {
-			status: post.status,
-			isPublicizeEnabled: isPublicizeEnabled( state, post.site_ID, post.type ),
-		};
-	},
-	{
-		toggleSharePanel,
+const mapStateToProps = ( state, { globalId } ) => {
+	const post = getPost( state, globalId );
+	if ( ! post ) {
+		return {};
 	}
-)( localize( PostActionsEllipsisMenuShare ) );
+
+	return {
+		status: post.status,
+		isPublicizeEnabled: isPublicizeEnabled( state, post.site_ID, post.type ),
+		type: post.type,
+	};
+};
+
+const mapDispatchToProps = { toggleSharePanel, bumpAnalyticsStat };
+
+const mergeProps = ( stateProps, dispatchProps, ownProps ) => {
+	const bumpStat = bumpStatGenerator(
+		get( stateProps, 'type.name' ),
+		'share',
+		dispatchProps.bumpAnalyticsStat
+	);
+	return Object.assign( {}, ownProps, stateProps, dispatchProps, { bumpStat } );
+};
+
+export default connect( mapStateToProps, mapDispatchToProps, mergeProps )(
+	localize( PostActionsEllipsisMenuShare )
+);

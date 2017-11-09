@@ -8,20 +8,26 @@ import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
 import { localize } from 'i18n-calypso';
+import { get } from 'lodash';
 
 /**
  * Internal dependencies
  */
 import PopoverMenuItem from 'components/popover/menu-item';
-import { mc } from 'lib/analytics';
+import { bumpStat as bumpAnalyticsStat } from 'state/analytics/actions';
+import { bumpStatGenerator } from './utils';
 import { getSiteSlug, isJetpackModuleActive } from 'state/sites/selectors';
 import { getPost } from 'state/posts/selectors';
+import { getPostType } from 'state/post-types/selectors';
 
-function bumpStat() {
-	mc.bumpStat( 'calypso_cpt_actions', 'stats' );
-}
-
-function PostActionsEllipsisMenuStats( { translate, siteSlug, postId, status, isStatsActive } ) {
+function PostActionsEllipsisMenuStats( {
+	translate,
+	siteSlug,
+	postId,
+	status,
+	isStatsActive,
+	bumpStat,
+} ) {
 	if ( ! isStatsActive || 'publish' !== status ) {
 		return null;
 	}
@@ -44,10 +50,11 @@ PostActionsEllipsisMenuStats.propTypes = {
 	postId: PropTypes.number,
 	status: PropTypes.string,
 	isStatsActive: PropTypes.bool,
+	bumpStat: PropTypes.func,
 };
 
-export default connect( ( state, ownProps ) => {
-	const post = getPost( state, ownProps.globalId );
+const mapStateToProps = ( state, { globalId } ) => {
+	const post = getPost( state, globalId );
 	if ( ! post ) {
 		return {};
 	}
@@ -57,5 +64,21 @@ export default connect( ( state, ownProps ) => {
 		postId: post.ID,
 		status: post.status,
 		isStatsActive: false !== isJetpackModuleActive( state, post.site_ID, 'stats' ),
+		type: getPostType( state, post.site_ID, post.type ),
 	};
-} )( localize( PostActionsEllipsisMenuStats ) );
+};
+
+const mapDispatchToProps = { bumpAnalyticsStat };
+
+const mergeProps = ( stateProps, dispatchProps, ownProps ) => {
+	const bumpStat = bumpStatGenerator(
+		get( stateProps, 'type.name' ),
+		'stats',
+		dispatchProps.bumpAnalyticsStat
+	);
+	return Object.assign( {}, ownProps, stateProps, dispatchProps, { bumpStat } );
+};
+
+export default connect( mapStateToProps, mapDispatchToProps, mergeProps )(
+	localize( PostActionsEllipsisMenuStats )
+);

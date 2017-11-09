@@ -15,6 +15,7 @@ import { combineReducers } from 'state/utils';
 import activityLog from './activity-log/reducer';
 import analyticsTracking from './analytics/reducer';
 import sitesSync from './sites/enhancer';
+import navigationMiddleware from './navigation/middleware';
 import noticesMiddleware from './notices/middleware';
 import extensionsModule from 'extensions';
 import application from './application/reducer';
@@ -51,6 +52,7 @@ import posts from './posts/reducer';
 import postTypes from './post-types/reducer';
 import preferences from './preferences/reducer';
 import preview from './preview/reducer';
+import privacyPolicy from './privacy-policy/reducer';
 import productsList from './products-list/reducer';
 import pushNotifications from './push-notifications/reducer';
 import purchases from './purchases/reducer';
@@ -121,6 +123,7 @@ const reducers = {
 	postTypes,
 	preferences,
 	preview,
+	privacyPolicy,
 	productsList,
 	purchases,
 	pushNotifications,
@@ -175,7 +178,8 @@ export function createReduxStore( initialState = {} ) {
 		require( './data-layer/wpcom-api-middleware.js' ).default,
 		isBrowser && require( './data-layer/extensions-middleware.js' ).default,
 		noticesMiddleware,
-		isBrowser && require( './happychat/middleware.js' ).default(),
+		isBrowser && require( './happychat/middleware.js' ).default,
+		isBrowser && require( './happychat/middleware-calypso.js' ).default,
 		isBrowser && require( './analytics/middleware.js' ).analyticsMiddleware,
 		isBrowser && require( './lib/middleware.js' ).default,
 		isBrowser &&
@@ -185,6 +189,7 @@ export function createReduxStore( initialState = {} ) {
 		isBrowser &&
 			config.isEnabled( 'automated-transfer' ) &&
 			require( './automated-transfer/middleware.js' ).default,
+		navigationMiddleware,
 	].filter( Boolean );
 
 	const enhancers = [

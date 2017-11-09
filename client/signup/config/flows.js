@@ -244,8 +244,8 @@ const flows = {
 };
 
 if ( config.isEnabled( 'signup/atomic-store-flow' ) ) {
-	flows[ 'atomic-store' ] = {
-		steps: [ 'design-type-with-atomic-store', 'themes', 'domains', 'plans-atomic-store', 'user' ],
+	flows[ 'store-nux' ] = {
+		steps: [ 'design-type-with-store-nux', 'themes', 'domains', 'plans-store-nux', 'user' ],
 		destination: getSiteDestination,
 		description: 'Signup flow for creating an online store with an Atomic site',
 		lastModified: '2017-09-27',
@@ -302,20 +302,39 @@ function removeUserStepFromFlow( flow ) {
 	} );
 }
 
-function filterDesignTypeInFlow( flow ) {
-	if ( ! flow ) {
-		return;
-	}
-
-	if ( ! includes( flow.steps, 'design-type' ) ) {
+function replaceStepInFlow( flow, oldStepName, newStepName ) {
+	// no change
+	if ( ! includes( flow.steps, oldStepName ) ) {
 		return flow;
 	}
 
 	return assign( {}, flow, {
-		steps: flow.steps.map(
-			stepName => ( stepName === 'design-type' ? 'design-type-with-store' : stepName )
-		),
+		steps: flow.steps.map( stepName => ( stepName === oldStepName ? newStepName : stepName ) ),
 	} );
+}
+
+function filterDesignTypeInFlow( flowName, flow ) {
+	if ( ! flow ) {
+		return;
+	}
+
+	if ( config.isEnabled( 'signup/atomic-store-flow' ) ) {
+		// If Atomic Store is enabled, replace 'design-type-with-store' with
+		// 'design-type-with-store-nux' in flows other than 'pressable'.
+		if ( flowName !== 'pressable' && includes( flow.steps, 'design-type-with-store' ) ) {
+			return replaceStepInFlow( flow, 'design-type-with-store', 'design-type-with-store-nux' );
+		}
+
+		// Show store option to everyone if Atomic Store is enabled
+		return replaceStepInFlow( flow, 'design-type', 'design-type-with-store-nux' );
+	}
+
+	// Show design type with store option only to new users with EN locale
+	if ( ! user.get() && 'en' === i18n.getLocaleSlug() ) {
+		return replaceStepInFlow( flow, 'design-type', 'design-type-with-store' );
+	}
+
+	return flow;
 }
 
 /**
@@ -378,10 +397,8 @@ const Flows = {
 			flow = removeUserStepFromFlow( flow );
 		}
 
-		// Show design type with store option only to new users with EN locale.
-		if ( ! user.get() && 'en' === i18n.getLocaleSlug() ) {
-			flow = filterDesignTypeInFlow( flow );
-		}
+		// Maybe modify the design type step to a variant with store
+		flow = filterDesignTypeInFlow( flowName, flow );
 
 		Flows.preloadABTestVariationsForStep( flowName, currentStepName );
 

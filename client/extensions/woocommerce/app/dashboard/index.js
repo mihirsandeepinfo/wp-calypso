@@ -29,11 +29,7 @@ import {
 } from 'woocommerce/state/sites/orders/selectors';
 import { fetchOrders } from 'woocommerce/state/sites/orders/actions';
 import { fetchProducts } from 'woocommerce/state/sites/products/actions';
-import { requestSyncStatus } from 'woocommerce/state/sites/settings/email/actions';
-import {
-	isRequestingSyncStatus,
-	hasMailChimpConnection,
-} from 'woocommerce/state/sites/settings/email/selectors';
+import { requestSettings } from 'woocommerce/state/sites/settings/mailchimp/actions';
 import { getSelectedSiteWithFallback } from 'woocommerce/state/sites/selectors';
 import {
 	getTotalProducts,
@@ -72,7 +68,7 @@ class Dashboard extends Component {
 		if ( selectedSite && selectedSite.ID ) {
 			this.props.fetchSetupChoices( selectedSite.ID );
 			this.props.fetchOrders( selectedSite.ID );
-			this.props.requestSyncStatus( selectedSite.ID );
+			this.props.requestSettings( selectedSite.ID );
 
 			if ( ! productsLoaded ) {
 				this.props.fetchProducts( selectedSite.ID, { page: 1 } );
@@ -89,7 +85,7 @@ class Dashboard extends Component {
 		if ( newSiteId && oldSiteId !== newSiteId ) {
 			this.props.fetchSetupChoices( newSiteId );
 			this.props.fetchOrders( newSiteId );
-			this.props.requestSyncStatus( newSiteId );
+			this.props.requestSettings( newSiteId );
 
 			if ( ! productsLoaded ) {
 				this.props.fetchProducts( newSiteId, { page: 1 } );
@@ -137,6 +133,12 @@ class Dashboard extends Component {
 			setStoreAddressDuringInitialSetup,
 		} = this.props;
 
+		// render should not be calling renderDashboardContent unless we have a site and ID,
+		// but let's check anyways in case that should change externally
+		if ( ! selectedSite || ! selectedSite.ID ) {
+			return null;
+		}
+
 		if ( ! finishedInstallOfRequiredPlugins ) {
 			return <RequiredPluginsInstallView site={ selectedSite } />;
 		}
@@ -146,7 +148,7 @@ class Dashboard extends Component {
 		}
 
 		if ( ! setStoreAddressDuringInitialSetup && ! hasProducts ) {
-			return <PreSetupView site={ selectedSite } />;
+			return <PreSetupView siteId={ selectedSite.ID } />;
 		}
 
 		if ( ! finishedInitialSetup ) {
@@ -163,7 +165,7 @@ class Dashboard extends Component {
 				{ manageView }
 				{ ! this.props.mailChimpConfigured &&
 					( config.isEnabled( 'woocommerce/extension-settings-email' ) && (
-						<MailChimp site={ selectedSite } redirectToSettings />
+						<MailChimp site={ selectedSite } redirectToSettings dashboardView />
 					) ) }
 			</div>
 		);
@@ -173,13 +175,16 @@ class Dashboard extends Component {
 		const { className, loading, selectedSite } = this.props;
 
 		if ( loading || ! selectedSite ) {
-			// TODO have a placeholder/loading view instead
+			// TODO reintroduce placeholder after new nux flow is finalized.
 			return null;
 		}
 
 		return (
 			<Main className={ classNames( 'dashboard', className ) }>
-				<ActionHeader breadcrumbs={ this.getBreadcrumb() } />
+				<ActionHeader
+					breadcrumbs={ this.getBreadcrumb() }
+					isLoading={ loading || ! selectedSite }
+				/>
 				{ this.renderDashboardContent() }
 			</Main>
 		);
@@ -189,14 +194,10 @@ class Dashboard extends Component {
 function mapStateToProps( state ) {
 	const selectedSite = getSelectedSiteWithFallback( state );
 	const loading =
-		areOrdersLoading( state ) ||
-		areSetupChoicesLoading( state ) ||
-		areProductsLoading( state ) ||
-		isRequestingSyncStatus( state );
+		areOrdersLoading( state ) || areSetupChoicesLoading( state ) || areProductsLoading( state );
 	const hasOrders = getNewOrdersWithoutPayPalPending( state ).length > 0;
 	const hasProducts = getTotalProducts( state ) > 0;
 	const productsLoaded = areProductsLoaded( state );
-	const mailChimpConfigured = hasMailChimpConnection( state );
 	const finishedInitialSetup = getFinishedInitialSetup( state );
 
 	return {
@@ -205,7 +206,6 @@ function mapStateToProps( state ) {
 		finishedPageSetup: getFinishedPageSetup( state ),
 		hasOrders,
 		hasProducts,
-		mailChimpConfigured,
 		productsLoaded,
 		loading,
 		selectedSite,
@@ -219,7 +219,7 @@ function mapDispatchToProps( dispatch ) {
 			fetchOrders,
 			fetchSetupChoices,
 			fetchProducts,
-			requestSyncStatus,
+			requestSettings,
 		},
 		dispatch
 	);

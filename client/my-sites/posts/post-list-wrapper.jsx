@@ -28,7 +28,7 @@ class PostListWrapper extends React.Component {
 			status: mapPostStatus( this.props.statusSlug ),
 			author: this.props.author,
 			search: this.props.search,
-			number: 40,
+			number: 20, // max supported by /me/posts endpoint for all-sites mode
 		};
 
 		if ( this.props.category ) {
@@ -54,11 +54,9 @@ class PostListWrapper extends React.Component {
 	render() {
 		return (
 			<div>
-				{ config.isEnabled( 'posts/post-type-list' ) ? (
-					this.renderPostTypeList()
-				) : (
-					this.renderPostList()
-				) }
+				{ config.isEnabled( 'posts/post-type-list' )
+					? this.renderPostTypeList()
+					: this.renderPostList() }
 			</div>
 		);
 	}

@@ -606,7 +606,11 @@ class SignupForm extends Component {
 				</LoggedOutForm>
 
 				{ this.props.isSocialSignupEnabled && (
-					<SocialSignupForm handleResponse={ this.props.handleSocialResponse } />
+					<SocialSignupForm
+						handleResponse={ this.props.handleSocialResponse }
+						socialService={ this.props.socialService }
+						socialServiceResponse={ this.props.socialServiceResponse }
+					/>
 				) }
 
 				{ this.props.footerLink || this.footerLink() }
