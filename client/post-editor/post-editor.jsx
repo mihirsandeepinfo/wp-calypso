@@ -119,7 +119,7 @@ export const PostEditor = createReactClass( {
 			showPreview: false,
 			isPostPublishPreview: false,
 			previewAction: null,
-			selectedRevisionId: null,
+			nestedSidebar: NESTED_SIDEBAR_NONE,
 		};
 	},
 
@@ -287,12 +287,6 @@ export const PostEditor = createReactClass( {
 		if ( isWithinBreakpoint( '<660px' ) ) {
 			this.props.setLayoutFocus( 'content' );
 		}
-
-		this.trackLoadRevision();
-	},
-
-	trackLoadRevision() {
-		this.props.recordTracksEvent( 'calypso_editor_post_revisions_load_revision' );
 	},
 
 	render: function() {
@@ -340,6 +334,7 @@ export const PostEditor = createReactClass( {
 						isSaveBlocked={ this.isSaveBlocked() }
 						isPublishing={ this.state.isPublishing }
 						isSaving={ this.state.isSaving }
+						loadRevision={ this.loadRevision }
 						onPreview={ this.onPreviewClick }
 						onPublish={ this.onPublish }
 						onSave={ this.onSave }
@@ -438,7 +433,6 @@ export const PostEditor = createReactClass( {
 						savedPost={ this.state.savedPost }
 						post={ this.state.post }
 						isNew={ this.state.isNew }
-						loadRevision={ this.loadRevision }
 						onPublish={ this.onPublish }
 						onTrashingPost={ this.onTrashingPost }
 						site={ site }
